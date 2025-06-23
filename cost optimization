@@ -10,12 +10,9 @@ pre req:
 4.edit configur in lambda function timeout 5min 1024 cpu & ram then run again
 
 
+lamdafunction
+
 import boto3
-import logging
-
-logger = logging.getLogger()
-logger.setLevel(logging.INFO)
-
 def lambda_handler(event, context):
     # Use any default region to fetch regions list
     ec2_client = boto3.client('ec2', region_name='us-east-1')
