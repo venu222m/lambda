@@ -1,3 +1,9 @@
+Fully automated AWS resource cleanup across all AWS regions by using lambda
+Terminate all stopped EC2 instances
+Delete all available (unattached) EBS volumes
+Release all unattached Elastic IPs
+
+
 import boto3
 import logging
 
