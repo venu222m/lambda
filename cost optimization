@@ -3,6 +3,12 @@ Terminate all stopped EC2 instances
 Delete all available (unattached) EBS volumes
 Release all unattached Elastic IPs
 
+pre req:
+1.aws lamda function with role
+2.ec2 full acess given in lambda role
+3.copy lambda function & test & deploy faces error memory issue
+4.edit configur in lambda function timeout 5min 1024 cpu & ram then run again
+
 
 import boto3
 import logging
