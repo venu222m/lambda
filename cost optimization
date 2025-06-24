@@ -1,5 +1,5 @@
 did u exp with aws lamdba?
-can you write lambda automation task ?
+can you write lambda automation task by using python script ?
 Fully automated AWS resource cleanup across all AWS regions by using lambda
 Terminate all stopped EC2 instances
 Delete all available (unattached) EBS volumes
