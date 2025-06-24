@@ -13,8 +13,11 @@ pre req:
 
 
 lamdafunction
-
 import boto3
+import logging
+
+logger = logging.getLogger()
+logger.setLevel(logging.INFO)
 def lambda_handler(event, context):
     # Use any default region to fetch regions list
     ec2_client = boto3.client('ec2', region_name='us-east-1')
