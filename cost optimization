@@ -13,47 +13,48 @@ pre req:
 
 
 lamdafunction
+------------------------
 import boto3
-import logging
 
-logger = logging.getLogger()
-logger.setLevel(logging.INFO)
 def lambda_handler(event, context):
-    # Use any default region to fetch regions list
     ec2_client = boto3.client('ec2', region_name='us-east-1')
     regions_response = ec2_client.describe_regions()
     regions = [region['RegionName'] for region in regions_response['Regions']]
 
     for region in regions:
-        logger.info(f"Processing region: {region}")
+        print(f"\nProcessing region: {region}")
         ec2 = boto3.client('ec2', region_name=region)
 
-        # Delete stopped instances
+        # 1. Terminate stopped instances
         instances = ec2.describe_instances(
             Filters=[{'Name': 'instance-state-name', 'Values': ['stopped']}]
         )
-
         for reservation in instances['Reservations']:
             for instance in reservation['Instances']:
                 instance_id = instance['InstanceId']
-                logger.info(f"Terminating instance: {instance_id}")
+                print(f"Terminating instance: {instance_id}")
                 ec2.terminate_instances(InstanceIds=[instance_id])
 
-        # Delete available volumes
+        # 2. Delete available EBS volumes
         volumes = ec2.describe_volumes(
             Filters=[{'Name': 'status', 'Values': ['available']}]
         )
-
         for volume in volumes['Volumes']:
             volume_id = volume['VolumeId']
-            logger.info(f"Deleting volume: {volume_id}")
+            print(f"Deleting volume: {volume_id}")
             ec2.delete_volume(VolumeId=volume_id)
 
-        # Release unattached Elastic IPs
+        # 3. Release unattached Elastic IPs
         addresses = ec2.describe_addresses()
-
         for address in addresses['Addresses']:
             if 'InstanceId' not in address or address['InstanceId'] is None:
-                allocation_id = address['AllocationId']
-                logger.info(f"Releasing Elastic IP: {allocation_id}")
-                ec2.release_address(AllocationId=allocation_id)
+                allocation_id = address.get('AllocationId')
+                if allocation_id:
+                    print(f"Releasing unattached Elastic IP: {allocation_id}")
+                    ec2.release_address(AllocationId=allocation_id)
+
+    return {
+        "statusCode": 200,
+        "body": "EC2 cleanup completed successfully"
+    }
+ 
